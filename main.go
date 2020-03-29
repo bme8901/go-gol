@@ -7,13 +7,11 @@ import (
 	"math/rand"
 )
 
-// data structure Game containing all of the integers
 type Game struct {
 	a [][]bool
 	w, h  int
 }
 
-// data structure Life containing two states of Game for comparison
 type Life struct {
 	a, b *Game
 	w, h int
@@ -31,16 +29,14 @@ func NewLife(w, h int) *Life{
 }
 
 func NewGame(w, h int) *Game {
-	//push row
 	s := make([][]bool, h)
-	for i := 0; i < w; i++ {
+	for i := range s {
 		s[i] = make([]bool, w)
 	}
 	return &Game{a: s, w: w, h: h}
 }
 
 func (g *Game) Set(x, y int, b bool){
-	// loop through fields
 	g.a[x][y] = b
 }
 
@@ -54,18 +50,17 @@ func (g *Game) Alive(x, y int) bool {
 
 func (g *Game) isAlive(x, y int) bool {
 	countAlive := 0
-	for d := -1; d <= 1; x++ {
+	for d := -1; d <= 1; d++ {
 		for k := -1; k <= 1; k++ {
 			if(d != 0 || k != 0) && (g.Alive(x+d, y+d)){
 				countAlive++
 			}
 		}
 	}
-	return countAlive == 3 || countAlive == 2 && g.isAlive(x, y)
+	return countAlive == 3 || countAlive == 2 && g.Alive(x, y)
 }
 
 func (l *Life) Step() {
-	//
 	for y := 0; y < l.h; y++ {
 		for x := 0; x < l.w; x++ {
 			l.b.Set(x, y, l.a.isAlive(x, y))
@@ -80,7 +75,7 @@ func (l *Life) PrintGame() string {
 		for x := 0; x < l.w; x++ {
 			b := byte(' ')
 			if l.a.isAlive(x, y) {
-				b = '*'
+				b = '@'
 			}
 			buf.WriteByte(b)
 		}
@@ -90,19 +85,11 @@ func (l *Life) PrintGame() string {
 }
 
 func main() {
-	// create new board
-	a := NewLife(30, 30)
-
-	// loop through n times
-	for i := 0; i < 10; i++ {
+	a := NewLife(40, 40)
+	for i := 0; i < 100; i++ {
 		a.Step()
-
-		//Print board
 		z := a.PrintGame()
 		fmt.Print("\x0c", z)
-
-		//Sleep between steps
-		time.Sleep(time.Second / 30)
+		time.Sleep(time.Second / 15)
 	}
-	// print board
 }
